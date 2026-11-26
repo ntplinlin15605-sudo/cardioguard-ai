@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CardioGuard AI - Cảnh báo Tương tác Thuốc Tim mạch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .chat-scroll::-webkit-scrollbar { width: 6px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shadow-sm z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        ♥
+      </div>
+      <div>
+        <h1 class="font-bold text-lg text-slate-900 leading-tight">CardioGuard AI</h1>
+        <p class="text-xs text-slate-500">Trợ lý Dược lâm sàng - Cảnh báo Tương tác Thuốc Tim mạch</p>
+      </div>
+    </div>
+    <span class="text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">
+      Sẵn sàng tư vấn
+    </span>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Sidebar: Tra cứu nhanh -->
+    <aside class="w-80 bg-white border-r border-slate-200 p-5 overflow-y-auto hidden md:flex flex-col gap-5">
+      <div>
+        <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">Tra cứu nhanh cặp thuốc</h2>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Thuốc tim mạch 1</label>
+            <select id="drug1" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:border-rose-500">
+              <option value="Warfarin">Warfarin (Chống đông)</option>
+              <option value="Clopidogrel">Clopidogrel (Kháng tiểu cầu)</option>
+              <option value="Simvastatin">Simvastatin (Hạ mỡ máu Statin)</option>
+              <option value="Atorvastatin">Atorvastatin (Hạ mỡ máu Statin)</option>
+              <option value="Digoxin">Digoxin (Trợ tim)</option>
+              <option value="Enalapril">Enalapril (Ức chế men chuyển)</option>
+              <option value="Amiodarone">Amiodarone (Chống loạn nhịp)</option>
+              <option value="Amlodipine">Amlodipine (Chẹn kênh calci)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">Thuốc phối hợp 2</label>
+            <select id="drug2" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:border-rose-500">
+              <option value="Aspirin">Aspirin (NSAID / Kháng tiểu cầu)</option>
+              <option value="Omeprazole">Omeprazole (Ức chế bơm proton)</option>
+              <option value="Amiodarone">Amiodarone (Chống loạn nhịp)</option>
+              <option value="Clarithromycin">Clarithromycin (Kháng sinh Macrolid)</option>
+              <option value="Spironolactone">Spironolactone (Lợi tiểu giữ kali)</option>
+              <option value="Verapamil">Verapamil (Chẹn kênh calci)</option>
+              <option value="Ibuprofen">Ibuprofen (Giảm đau NSAID)</option>
+              <option value="Rivaroxaban">Rivaroxaban (Chống đông DOAC)</option>
+            </select>
+          </div>
+          <button onclick="checkQuickPair()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-medium text-sm py-2.5 rounded-lg transition shadow-sm">
+            Phân tích tương tác ngay
+          </button>
+        </div>
+      </div>
+
+      <hr class="border-slate-200" />
+
+      <div>
+        <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-2.5">Tình huống kinh điển</h2>
+        <div class="space-y-2">
+          <button onclick="sendPreset('Kiểm tra tương tác giữa Warfarin và Aspirin ở bệnh nhân rung nhĩ kèm bệnh mạch vành.')" class="w-full text-left text-xs p-2.5 rounded-lg border border-slate-200 hover:border-rose-300 hover:bg-rose-50/50 transition">
+            <span class="font-semibold text-rose-700 block">Warfarin + Aspirin</span>
+            <span class="text-slate-500">Nguy cơ xuất huyết tiêu hóa & nội sọ</span>
+          </button>
+          <button onclick="sendPreset('Phân tích tương tác giữa Clopidogrel và Omeprazole, nên đổi sang thuốc bảo vệ dạ dày nào?')" class="w-full text-left text-xs p-2.5 rounded-lg border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 transition">
+            <span class="font-semibold text-amber-700 block">Clopidogrel + Omeprazole</span>
+            <span class="text-slate-500">Giảm hoạt tính chống kết tập tiểu cầu</span>
+          </button>
+          <button onclick="sendPreset('Đánh giá tương tác Simvastatin 40mg dùng chung với Amiodarone hoặc Amlodipine.')" class="w-full text-left text-xs p-2.5 rounded-lg border border-slate-200 hover:border-rose-300 hover:bg-rose-50/50 transition">
+            <span class="font-semibold text-rose-700 block">Simvastatin + Amiodarone</span>
+            <span class="text-slate-500">Nguy cơ tiêu cơ vân cấp tính</span>
+          </button>
+          <button onclick="sendPreset('Kiểm tra tương tác Enalapril phối hợp với Spironolactone ở bệnh nhân suy tim.')" class="w-full text-left text-xs p-2.5 rounded-lg border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 transition">
+            <span class="font-semibold text-amber-700 block">Enalapril + Spironolactone</span>
+            <span class="text-slate-500">Nguy cơ tăng kali máu nặng</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-auto bg-slate-100 p-3 rounded-lg text-[11px] text-slate-500 leading-relaxed">
+        <strong>Lưu ý chuyên môn:</strong> Kết quả mang tính chất tham khảo hỗ trợ quyết định lâm sàng. Luôn đối chiếu chức năng gan, thận và điện giải đồ thực tế của người bệnh.
+      </div>
+    </aside>
+
+    <!-- Chat Area -->
+    <main class="flex-1 flex flex-col bg-slate-50">
+      <div id="chatBox" class="flex-1 p-6 overflow-y-auto chat-scroll space-y-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 max-w-3xl shadow-sm">
+          <div class="flex items-center gap-2 text-rose-600 font-semibold text-sm mb-2">
+            <span>🩺 Dược sĩ Lâm sàng Tim mạch AI</span>
+          </div>
+          <p class="text-sm text-slate-700 leading-relaxed">
+            Xin chào! Hãy nhập tên 2 hoặc nhiều thuốc tim mạch (hoặc thuốc dùng kèm như kháng sinh, NSAID, PPI...) để tôi phân tích <strong>mức độ nghiêm trọng</strong>, <strong>cơ chế dược lý</strong>, <strong>hậu quả lâm sàng</strong> và <strong>hướng xử trí tối ưu</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Input Box -->
+      <div class="bg-white border-t border-slate-200 p-4">
+        <form id="chatForm" onsubmit="handleSend(event)" class="max-w-4xl mx-auto flex gap-3">
+          <input
+            id="userInput"
+            type="text"
+            placeholder="Ví dụ: Bệnh nhân đang uống Digoxin và Amiodarone có tương tác gì không?..."
+            class="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+            required
+          />
+          <button
+            id="sendBtn"
+            type="submit"
+            class="bg-rose-600 hover:bg-rose-700 disabled:bg-slate-400 text-white font-medium text-sm px-6 py-3 rounded-xl transition shadow-sm"
+          >
+            Gửi
+          </button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function formatMessage(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function appendMessage(role, htmlContent) {
+      const wrapper = document.createElement('div');
+      wrapper.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+
+      const bubble = document.createElement('div');
+      bubble.className = role === 'user'
+        ? 'bg-rose-600 text-white rounded-2xl rounded-tr-sm px-5 py-3.5 max-w-2xl text-sm leading-relaxed shadow-sm'
+        : 'bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm p-5 max-w-3xl text-sm leading-relaxed shadow-sm';
+
+      bubble.innerHTML = htmlContent;
+      wrapper.appendChild(bubble);
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return bubble;
+    }
+
+    function checkQuickPair() {
+      const d1 = document.getElementById('drug1').value;
+      const d2 = document.getElementById('drug2').value;
+      if (d1 === d2) {
+        alert('Vui lòng chọn 2 hoạt chất khác nhau để kiểm tra tương tác.');
+        return;
+      }
+      sendPreset(`Phân tích chi tiết tương tác thuốc giữa ${d1} và ${d2}.`);
+    }
+
+    function sendPreset(text) {
+      userInput.value = text;
+      handleSend(new Event('submit'));
+    }
+
+    async function handleSend(e) {
+      e.preventDefault();
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      appendMessage('user', message);
+      userInput.value = '';
+      sendBtn.disabled = true;
+
+      const loadingBubble = appendMessage('bot', '<span class="text-slate-400 italic">Đang tra cứu cơ sở dữ liệu tương tác thuốc tim mạch...</span>');
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Lỗi kết nối máy chủ');
+        }
+        loadingBubble.innerHTML = formatMessage(data.reply);
+      } catch (err) {
+        loadingBubble.innerHTML = `<span class="text-rose-600 font-medium">Lỗi: ${err.message}</span>`;
+      } finally {
+        sendBtn.disabled = false;
+        userInput.focus();
+      }
+    }
+  </script>
+</body>
+</html>
